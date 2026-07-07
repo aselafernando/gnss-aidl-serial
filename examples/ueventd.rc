@@ -1,0 +1,15 @@
+# DAC permissions for the serial GPS device nodes so the HAL (user gps) can
+# open them. SELinux labelling is separate — see sepolicy/file_contexts.
+#
+# APEXes cannot carry ueventd rules (ueventd only reads /system, /vendor and
+# /odm etc/ueventd.rc), so APPEND these lines to your device tree's ueventd
+# file — the one installed as /vendor/etc/ueventd.rc, e.g.:
+#   emulator: the goldfish ueventd rc (grep -rln ueventd device/generic/goldfish)
+#   rpi:      the ueventd rc in device/brcm/rpi4 / rpi5
+# Trim to your board's actual GPS tty if you don't want every serial port
+# gps-owned.
+/dev/ttyO*      0660   gps   system
+/dev/ttyS*      0660   gps   system
+/dev/ttyUSB*    0660   gps   system
+/dev/ttyACM*    0660   gps   system
+/dev/ttyAMA*    0660   gps   system

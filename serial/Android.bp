@@ -1,0 +1,80 @@
+//
+// Copyright (C) 2026 Asela Fernando
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+// Shared source set, also usable for host unit tests of the NMEA parser.
+cc_defaults {
+    name: "gnss-serial-defaults",
+    cflags: [
+        "-Wall",
+        "-Werror",
+        "-Wextra",
+    ],
+}
+
+// init script and VINTF fragment, bundled into the APEX via its `prebuilts`
+// list (an apex does NOT pick up a binary's init_rc/vintf_fragments — those
+// properties only apply to binaries installed directly to a partition).
+prebuilt_etc {
+    name: "gnss-serial.rc",
+    src: "gnss-serial.rc",
+    vendor: true,
+    installable: false,
+}
+
+prebuilt_etc {
+    name: "gnss-serial.xml",
+    src: "gnss-serial.xml",
+    sub_dir: "vintf",
+    vendor: true,
+    installable: false,
+}
+
+cc_binary {
+    name: "android.hardware.gnss-service.serial",
+    defaults: ["gnss-serial-defaults"],
+    relative_install_path: "hw",
+    vendor: true,
+
+    srcs: [
+        "service.cpp",
+        "Gnss.cpp",
+        "NmeaParser.cpp",
+        "SerialDevice.cpp",
+        "GnssConfiguration.cpp",
+        "GnssPowerIndication.cpp",
+        "GnssMeasurementInterface.cpp",
+        "AGnss.cpp",
+        "AGnssRil.cpp",
+        "GnssVisibilityControl.cpp",
+        "GnssDebug.cpp",
+        "GnssAntennaInfo.cpp",
+    ],
+
+    shared_libs: [
+        "libbase",
+        "libbinder_ndk",
+        "libcutils",
+        "liblog",
+        "libutils",
+    ],
+
+    static_libs: [
+        // Frozen V4 NDK backend of android.hardware.gnss. Android 17 accepts
+        // versions 2-7 (FCM 202604/202704), so V4 passes VINTF everywhere
+        // while staying buildable on older trees. Keep in lockstep with the
+        // <version> in gnss-serial.xml.
+        "android.hardware.gnss-V4-ndk",
+    ],
+
+    // Part of the com.android.hardware.gnss.serial APEX.
+    apex_available: [
+        "com.android.hardware.gnss.serial",
+    ],
+}

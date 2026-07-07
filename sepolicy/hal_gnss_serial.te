@@ -1,0 +1,31 @@
+# SELinux policy for the serial NMEA GNSS HAL.
+#
+# The HAL runs in the standard AOSP hal_gnss_default domain (the APEX binary is
+# labelled hal_gnss_default_exec via the APEX file_contexts), so we only need to
+# grant the extra accesses the serial path requires.
+
+# Serial tty device type.
+type gps_device, dev_type;
+
+# Configuration property type.
+vendor_internal_prop(vendor_gps_prop)
+
+# Read/write the GPS UART (NMEA in, UBX CFG-RATE out).
+allow hal_gnss_default gps_device:chr_file rw_file_perms;
+
+# Read persist.vendor.gps.* configuration.
+get_prop(hal_gnss_default, vendor_gps_prop)
+
+# Defaults in vendor/build.prop (PRODUCT_VENDOR_PROPERTIES) are applied by
+# vendor_init, which needs set permission on the property type.
+set_prop(vendor_init, vendor_gps_prop)
+
+# USB vid:pid device resolution (persist.vendor.gps.usb) scans /sys/class/tty
+# and reads the idVendor/idProduct attributes of each tty's USB ancestor;
+# these nodes carry the default sysfs label.
+allow hal_gnss_default sysfs:dir r_dir_perms;
+allow hal_gnss_default sysfs:file r_file_perms;
+allow hal_gnss_default sysfs:lnk_file read;
+
+# Optional system-time sync (persist.vendor.gps.time_sync) uses settimeofday().
+allow hal_gnss_default self:global_capability_class_set sys_time;

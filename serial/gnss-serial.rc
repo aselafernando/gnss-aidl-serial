@@ -1,0 +1,5 @@
+service vendor.gnss-serial /apex/com.android.hardware.gnss.serial/bin/hw/android.hardware.gnss-service.serial
+    class hal
+    user gps
+    group system gps inet
+    capabilities SYS_TIME

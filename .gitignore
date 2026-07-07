@@ -1,0 +1,5 @@
+# Signing material — generated locally by ./generate-keys.sh, never committed.
+# keys/ holds two key pairs (.pem <-> .avbpubkey and .pk8 <-> .x509.pem);
+# each pair must stay together. Committing a public half would let anyone sign
+# an APEX your builds trust, and a mismatched pair is rejected by apexd at boot.
+/keys/

@@ -1,0 +1,8 @@
+# Serial GPS device node. Adjust the path to match
+# persist.vendor.gps.device on your board (e.g. /dev/ttyO1, /dev/ttyS1,
+# /dev/ttyUSB0, /dev/ttyAMA0 ...).
+/dev/ttyO[0-9]+      u:object_r:gps_device:s0
+/dev/ttyS[0-9]+      u:object_r:gps_device:s0
+/dev/ttyUSB[0-9]+    u:object_r:gps_device:s0
+/dev/ttyACM[0-9]+    u:object_r:gps_device:s0
+/dev/ttyAMA[0-9]+    u:object_r:gps_device:s0

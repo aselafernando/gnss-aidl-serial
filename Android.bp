@@ -1,0 +1,59 @@
+//
+// Copyright (C) 2026 Asela Fernando
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+// Signing material lives in keys/ and is generated locally (never committed):
+// run ./generate-keys.sh once after cloning. It produces both pairs —
+// keys/*.pem + keys/*.avbpubkey (APEX image / AVB) and
+// keys/*.pk8 + keys/*.x509.pem (APEX container certificate).
+apex_key {
+    name: "com.android.hardware.gnss.serial.key",
+    public_key: "keys/com.android.hardware.gnss.serial.avbpubkey",
+    private_key: "keys/com.android.hardware.gnss.serial.pem",
+}
+
+android_app_certificate {
+    name: "com.android.hardware.gnss.serial.certificate",
+    certificate: "keys/com.android.hardware.gnss.serial",
+}
+
+apex {
+    name: "com.android.hardware.gnss.serial",
+    manifest: "apex_manifest.json",
+    file_contexts: "file_contexts",
+    key: "com.android.hardware.gnss.serial.key",
+    certificate: ":com.android.hardware.gnss.serial.certificate",
+
+    // Vendor HAL APEX: installed to /vendor/apex, not OTA-updatable.
+    vendor: true,
+    updatable: false,
+
+    // Exclude stock GNSS HALs from the image so this APEX is the only
+    // IGnss/default — no device-tree edits needed. Names that do not exist
+    // in a given tree are ignored, so known variants are all listed.
+    overrides: [
+        // goldfish / AAOS emulator
+        "android.hardware.gnss-service.ranchu",
+        "com.android.hardware.gnss.ranchu",
+        // AOSP reference/example implementations
+        "android.hardware.gnss-service.example",
+        "com.android.hardware.gnss",
+    ],
+
+    binaries: [
+        "android.hardware.gnss-service.serial",
+    ],
+
+    // Init script (etc/) and VINTF fragment (etc/vintf/); an apex does not
+    // inherit these from the binary, they must be listed explicitly.
+    prebuilts: [
+        "gnss-serial.rc",
+        "gnss-serial.xml",
+    ],
+}
