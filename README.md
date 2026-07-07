@@ -15,7 +15,7 @@ your AOSP tree, generate keys, add it to a product, build.
 ```sh
 # 1. clone into your tree (<vendor> is any name you pick)
 cd "$ANDROID_BUILD_TOP"
-git clone <this-repo> device/<vendor>/gnss-aidl-serial
+git clone https://github.com/aselafernando/gnss-aidl-serial.git device/<vendor>/gnss-aidl-serial
 
 # 2. generate the signing keys (once; writes to keys/, which is git-ignored)
 device/<vendor>/gnss-aidl-serial/generate-keys.sh
